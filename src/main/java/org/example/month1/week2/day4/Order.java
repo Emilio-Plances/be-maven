@@ -43,4 +43,8 @@ public class Order {
                 ", customer=" + customer +
                 '}';
     }
+
+    public double getTotal(){
+        return products.stream().reduce(0.0,(a,b)->a+b.getPrice(),Double::sum);
+    }
 }

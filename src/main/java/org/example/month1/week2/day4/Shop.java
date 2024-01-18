@@ -1,8 +1,13 @@
 package org.example.month1.week2.day4;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,15 +23,45 @@ public class Shop {
         List<Product> boysList= getBoysAndDiscount(prod);
 
         LocalDate ld1=LocalDate.now();
-        Order o1=new Order(3001,"Pending",ld1,babyList,c2);
-
         LocalDate ld2=LocalDate.of(2021, Month.FEBRUARY,5);
-        Order o2=new Order(3002,"Pending",ld2,bookList,c1);
 
-        List<Order> orderList=List.of(o1,o2);
+        Order o1=new Order(3001,"Pending",ld1,babyList,c2);
+        Order o2=new Order(3002,"Pending",ld2,bookList,c1);
+        Order o3=new Order(3002,"Pending",ld1,bookList,c1);
+
+        List<Order> orderList=List.of(o1,o2,o3);
 
         List<Order> olderOrder=getFebruaryOrder(orderList);
+        //Map<Customer,Order> orderMap= new HashMap<>();
 
+
+        Map<Customer, List<Order>> orderMap=orderList.stream()
+                .collect(Collectors.groupingBy(Order::getCustomer));
+
+        Map<Customer,Double> importMap=orderList.stream()
+                .collect(Collectors.groupingBy(Order::getCustomer,Collectors.summingDouble(Order::getTotal)));
+
+        List<Product> mostExpensive= prod.stream().sorted(Comparator.comparingDouble(Product::getPrice).reversed())
+                .limit(3)
+                .collect(Collectors.toList());
+
+        Map<Customer,Double> averageMap=orderList.stream()
+                .collect(Collectors.groupingBy(Order::getCustomer,Collectors.averagingDouble(Order::getTotal)));
+
+        Map<Category,Double> CategoryTotal= prod.stream()
+                .collect(Collectors.groupingBy(Product::getCategory,
+                        Collectors.summingDouble(Product::getPrice)));
+
+        File txtFile=new File("createdFile/products.txt");
+        //createFile(txtFile,prod);
+        try{
+            List<String> lista=FileUtils.readLines(txtFile, Charset.defaultCharset());
+            System.out.println(lista);
+            System.out.println(transformToProductList(lista));
+
+        }catch(IOException ex){
+            System.out.println(ex.getMessage());
+        }
     }
 
     private static List<Product> getProductList() {
@@ -59,5 +94,31 @@ public class Shop {
                         }
                         return false;
                     }).collect(Collectors.toList());
+    }
+    private static void createFile(File txtFile,List<Product> prod){
+        prod.forEach((element)->{
+            String text=element.getId()+"@"+
+                    element.getName()+"@"+
+                    element.getCategory()+"@"+
+                    element.getPrice()+"\n";
+            try{
+                FileUtils.writeStringToFile(txtFile,text, Charset.defaultCharset(),true);
+            }catch(IOException ex){
+                System.out.println(ex.getMessage());
+            }
+        });
+    }
+
+    private static List<Product>transformToProductList(List<String> lista){
+        List<Product> products=new ArrayList<>();
+        lista.forEach(element->{
+            String[] toArray= element.split("@");
+            long id=Long.parseLong(toArray[0]);
+            String name=toArray[1];
+            Category category=Product.FindCategory(toArray[2]);
+            double price=Double.parseDouble(toArray[3]);
+            products.add(new Product(id,name,category,price));
+        });
+        return products;
     }
 }

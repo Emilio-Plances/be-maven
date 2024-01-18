@@ -13,6 +13,14 @@ public class Product {
         this.price=price;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public Category getCategory() {
         return category;
     }
@@ -32,5 +40,11 @@ public class Product {
                 ", categoria=" + category +
                 ", prezzo=" + price +"€"+
                 '}';
+    }
+
+    public static Category FindCategory(String s){
+        if(s.equals("Baby")) return Category.Baby;
+        if(s.equals("Boys")) return Category.Boys;
+        return Category.Book;
     }
 }
