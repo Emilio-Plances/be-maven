@@ -11,7 +11,7 @@ public class EventDao {
     private EntityManagerFactory emf;
     private EntityManager em;
     public EventDao(){
-        emf= Persistence.createEntityManagerFactory("epicodejpa");
+        emf= Persistence.createEntityManagerFactory("manageevents");
         em= emf.createEntityManager();
     }
 

@@ -16,6 +16,6 @@ public class UseEvent {
         System.out.println(event.addEvent(e));
 
         System.out.println(event.getEventById(1));
-        event.deleteEvent(16);
+        event.deleteEvent(1);
     }
 }
