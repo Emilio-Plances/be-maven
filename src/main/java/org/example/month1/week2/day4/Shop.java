@@ -59,6 +59,7 @@ public class Shop {
             System.out.println(lista);
             System.out.println(transformToProductList(lista));
 
+
         }catch(IOException ex){
             System.out.println(ex.getMessage());
         }
